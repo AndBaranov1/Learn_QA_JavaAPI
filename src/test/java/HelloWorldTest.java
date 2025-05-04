@@ -11,4 +11,13 @@ public class HelloWorldTest {
                 .andReturn();
         response.prettyPrint();
     }
+
+    @Test
+    public void  testGetText() {
+        Response response = RestAssured
+                .get(" https://playground.learnqa.ru/api/get_text")
+                .andReturn();
+        response.prettyPrint();
+
+    }
 }
