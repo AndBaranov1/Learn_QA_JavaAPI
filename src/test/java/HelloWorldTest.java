@@ -10,15 +10,15 @@ public class HelloWorldTest {
 
     @Test
     public void testRestAssured() {
-        Map<String,Object> body = new HashMap<>();
-        body.put("param1", "value1");
-        body.put("param2", "value2");
         Response response = RestAssured
                 .given()
-                .body(body)
-                .post(" https://playground.learnqa.ru/api/check_type")
+                .redirects()
+                .follow(true)
+                .when()
+                .get(" https://playground.learnqa.ru/api/get_303")
                 .andReturn();
-        response.print();
+        int statusCode = response.getStatusCode();
+        System.out.println(statusCode);
     }
 
     @Test
