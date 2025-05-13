@@ -16,15 +16,14 @@ public class HelloWorldTest {
         headers.put("myHeader2", "myValue2");
         Response response = RestAssured
                 .given()
-                .redirects()
-                .follow(false)
+                .headers(headers)
                 .when()
-                .get(" https://playground.learnqa.ru/api/get_303")
+                .get(" https://playground.learnqa.ru/api/show_all_headers")
                 .andReturn();
         response.prettyPrint();
 
-        String locationHeader = response.getHeader("Location");
-        System.out.println(locationHeader);
+        Headers responseHeaders = response.getHeaders();
+        System.out.println(responseHeaders);
     }
 
     @Test
