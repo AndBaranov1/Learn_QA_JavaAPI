@@ -22,11 +22,9 @@ public class MakingSimpleAPIRequestsTest {
         String secondMessage = response.getString("messages[1].message");
         System.out.println("Второе сообщение: " + secondMessage);
     }
+
     @Test
     public void testRestAssuredRedirect() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("myHeader1", "myValue1");
-        headers.put("myHeader2", "myValue2");
         Response response = RestAssured
                 .given()
                 .redirects()
@@ -39,5 +37,4 @@ public class MakingSimpleAPIRequestsTest {
         String locationHeader = response.getHeader("Location");
         System.out.println(locationHeader);
     }
-
 }
