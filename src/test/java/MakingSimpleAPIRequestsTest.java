@@ -37,4 +37,31 @@ public class MakingSimpleAPIRequestsTest {
         String locationHeader = response.getHeader("Location");
         System.out.println(locationHeader);
     }
+
+    @Test
+    public void testRestAssuredLongRedirect() {
+        String currentUrl = "https://playground.learnqa.ru/api/long_redirect";
+        int redirectCount = 0;
+
+        while (true) {
+            Response response = RestAssured
+                    .given()
+                    .redirects().follow(false)
+                    .when()
+                    .get(currentUrl)
+                    .andReturn();
+
+            String location = response.getHeader("Location");
+
+            if (location == null) {
+                System.out.println("Финальный URL: " + currentUrl);
+                System.out.println("Общее количество редиректов: " + redirectCount);
+                break;
+            }
+
+            // Переход на следующий редирект
+            currentUrl = location;
+            redirectCount++;
+        }
+    }
 }
