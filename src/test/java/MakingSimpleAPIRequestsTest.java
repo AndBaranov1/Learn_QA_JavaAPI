@@ -6,7 +6,12 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class MakingSimpleAPIRequestsTest {
+
+    public static final String STATUS_READY = "Job is ready";
+    public static final String STATUS_NOT_READY = "Job is NOT ready";
 
     @Test
     public void testRestAssuredPars() {
@@ -63,5 +68,42 @@ public class MakingSimpleAPIRequestsTest {
             currentUrl = location;
             redirectCount++;
         }
+    }
+
+    @Test
+    public void testRestAssuredLongTokenRedirect() throws InterruptedException {
+        JsonPath createTask = RestAssured
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .jsonPath();
+        createTask.prettyPrint();
+
+        String token = createTask.getString("token");
+        int wait = createTask.getInt("seconds");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("token", token);
+        Response createTaskWithToken = RestAssured
+                .given()
+                .queryParams(params)
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .andReturn();
+        createTaskWithToken.prettyPrint();
+        String status = createTaskWithToken.jsonPath().getString("status");
+        assertEquals(status, STATUS_NOT_READY, "Ожидается статус " + STATUS_NOT_READY + "до выполнения задачи");
+
+        System.out.println("Ждём " + wait + " секунд...");
+        Thread.sleep(wait * 1000L);
+
+        Response createTaskReady = RestAssured
+                .given()
+                .queryParams(params)
+                .get("https://playground.learnqa.ru/ajax/api/longtime_job")
+                .andReturn();
+        createTaskReady.prettyPrint();
+
+        String statusReady = createTaskReady.jsonPath().getString("status");
+        int result = createTaskReady.jsonPath().getInt("result");
+        assertEquals(statusReady, STATUS_READY, "Ожидается статус " + STATUS_READY + "после выполнения задачи");
+        assertEquals(result, 42, "Результат 42 после выполнения задачи");
     }
 }
