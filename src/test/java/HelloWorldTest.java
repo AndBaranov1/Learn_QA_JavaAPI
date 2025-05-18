@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class HelloWorldTest {
 
     @Test
@@ -43,5 +45,12 @@ public class HelloWorldTest {
                 .get(" https://playground.learnqa.ru/api/get_text")
                 .andReturn();
         response.prettyPrint();
+    }
+
+    @Test
+    public void shortPhraseTest() {
+        String hello = "Hello, world!!!";
+        int size = 15;
+        assertEquals(hello.length(),  size, "Длинна символов");
     }
 }
