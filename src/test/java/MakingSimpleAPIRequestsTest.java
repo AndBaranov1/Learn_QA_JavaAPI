@@ -1,10 +1,17 @@
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -105,5 +112,59 @@ public class MakingSimpleAPIRequestsTest {
         int result = createTaskReady.jsonPath().getInt("result");
         assertEquals(statusReady, STATUS_READY, "Ожидается статус " + STATUS_READY + "после выполнения задачи");
         assertEquals(result, 42, "Результат 42 после выполнения задачи");
+    }
+
+    @Test
+    public void testRestAssuredPasswordSelection() throws IOException {
+        // Получаем список паролей
+        Document document = Jsoup.connect("https://en.wikipedia.org/wiki/List_of_the_most_common_passwords").get();
+        Elements tableRows = document.select("#mw-content-text > div.mw-content-ltr.mw-parser-output > table:nth-child(11) > tbody");
+
+        // Проходим по всем строкам таблицы, находим ячейки align=left и добавляем в коллекцию.
+        // Коллекция содержит уникальные значения
+        Set<String> passwordSet = new HashSet<>();
+        for (Element row : tableRows) {
+            Elements tdElements = row.select("td[align=left]");
+
+            for (Element td : tdElements) {
+                String password = td.text().trim();
+                if (!password.isEmpty()) {
+                    passwordSet.add(password);
+                }
+            }
+        }
+
+        // Каждый пароль подставляем в запрос и получаем cookie
+       for (String password : passwordSet) {
+           Map<String, String> credentials = new HashMap<>();
+           credentials.put("login", "super_admin");
+           credentials.put("password", password);
+           // Запрос авторизации
+           Response response = RestAssured
+                   .given()
+                   .body(credentials)
+                   .when()
+                   .post("https://playground.learnqa.ru/ajax/api/get_secret_password_homework")
+                   .andReturn();
+           String responseCookies= response.getCookie("auth_cookie");
+
+           // Полученную cookie передаем в метод для проверки
+           Map<String, String> cookies = new HashMap<>();
+           cookies.put("auth_cookie", responseCookies);
+           Response responseForCheck = RestAssured
+                   .given()
+                   .body(credentials)
+                   .cookies(cookies)
+                   .when()
+                   .post("https://playground.learnqa.ru/api/check_auth_cookie")
+                   .andReturn();
+
+           String answer = responseForCheck.asString();
+           if (!answer.equals("You are NOT authorized"))  {
+               System.out.println("Верный пароль: " + password);
+               System.out.println("Ответ: " + answer);
+               break;
+           }
+        }
     }
 }
