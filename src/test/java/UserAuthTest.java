@@ -47,4 +47,17 @@ public class UserAuthTest {
         assertTrue(userIdOnCheck > 0, "Unexpected user id " + userIdOnCheck);
         assertEquals(userIdOnAuth, userIdOnCheck, "user id from auth request is not equal to user_id from check request");
     }
+
+    @Test
+    public void testMethodCookie() {
+        Response response = RestAssured
+                .given()
+                .get("https://playground.learnqa.ru/api/homework_cookie")
+                .andReturn();
+        assertEquals(200, response.getStatusCode(), "Unexpected status code");
+
+        Map<String, String> cookies = response.getCookies();
+        System.out.println("Вывод Cookies: " + cookies);
+        assertTrue(cookies.containsValue("hw_value"), "Response doesn't have 'hw_value' cookie");
+    }
 }
