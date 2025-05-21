@@ -102,4 +102,42 @@ public class UserAuthTest {
         assertEquals("Some secret value", secretHeaderValue, "Header 'x-secret-homework-header' does not have the expected value");
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Mozilla/5.0 (iPad; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"})
+    public void testUserAgent(String user_agent) {
+        Map<String, String> header = new HashMap<>();
+
+        if (user_agent.length() > 0) {
+            header.put("User-agent", user_agent);
+        }
+
+        JsonPath response = RestAssured
+                .given()
+                .headers(header)
+                .get("https://playground.learnqa.ru/ajax/api/user_agent_check")
+                .jsonPath();
+        response.prettyPrint();
+
+        String platform = response.getString("platform");
+        if (user_agent.contains("iPad")) {
+            assertEquals("Mobile", platform, "Ожидалось значение Mobile для iOS устройства");
+        } else if (user_agent.contains("Windows")) {
+            assertEquals("Web", platform, "Ожидалось значение Web для Windows устройства");
+        }
+
+        String browser = response.getString("browser");
+        if (user_agent.contains("iPad")) {
+            assertEquals("No", browser, "Ожидалось значение No для iOS устройства");
+        } else if (user_agent.contains("Windows")) {
+            assertEquals("Chrome", browser, "Ожидалось значение Chrome для Windows устройства");
+        }
+
+        String device = response.getString("device");
+        if (user_agent.contains("iPad")) {
+            assertEquals("iPhone", device, "Ожидалось значение iPhone для iOS устройства");
+        } else if (user_agent.contains("Windows")) {
+            assertEquals("No", device, "Ожидалось значение No для Windows устройства");
+        }
+    }
 }
