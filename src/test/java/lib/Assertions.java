@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Assertions {
 
@@ -43,5 +44,28 @@ public class Assertions {
         for (String unexpectedFieldName : unexpectedFieldNames) {
             Assertions.assertJsonHasField(Response, unexpectedFieldName);
         }
+    }
+
+    public static void assertInvalidEmail(Response Response, String expectedEmail) {
+        assertEquals(expectedEmail, Response.asString(), "The response indicates that the email address lacks the '@' sign.");
+    }
+
+    public static void assertParamsAndMissed(String responseBody, String expectedEmail) {
+        assertTrue(responseBody.contains("The following required params are missed: " + expectedEmail),
+                "Expected missing param message not found in response: " + responseBody);
+    }
+
+    public static void assertValueFieldShort(String responseBody, String fieldName) {
+        assertTrue(
+                responseBody.contains(fieldName),
+                "Expected a message about a field being too short '" + fieldName + "'. Actual answer: " + responseBody
+        );
+    }
+
+    public static void assertValueFieldLong(String responseBody, String fieldName) {
+        assertTrue(
+                responseBody.contains(fieldName),
+                "Expected a message about a field being too long '" + fieldName + "'. Actual answer: " + responseBody
+        );
     }
 }
