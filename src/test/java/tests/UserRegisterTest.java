@@ -7,6 +7,7 @@ import lib.ApiCoreRequests;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +20,25 @@ import java.util.stream.Stream;
 
 public class UserRegisterTest extends BaseTestCase {
 
+    String cookie;
+    String header;
+    int userIdOnAuth;
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
+
+    @BeforeEach
+    public void loginUser() {
+        // Авторизация пользователя
+        Map<String, String> authData = new HashMap<>();
+        authData.put("email", "vinkotov@example.com");
+        authData.put("password", "1234");
+
+        Response responseGetAuth = apiCoreRequests
+                .makePostRequest("https://playground.learnqa.ru/api/user/login", authData);
+
+        this.cookie = this.getCookie(responseGetAuth, "auth_sid");
+        this.header = this.getHeader(responseGetAuth, "x-csrf-token");
+        this.userIdOnAuth = this.getIntFromJson(responseGetAuth, "user_id");
+    }
 
     @Test
     public void testCreateUserWithExistingEmail() {
@@ -135,5 +154,38 @@ public class UserRegisterTest extends BaseTestCase {
 
         Assertions.assertResponseCodeEquals(responseCreateAuth, 400);
         Assertions.assertValueFieldLong(responseCreateAuth.asString(), "username");
+    }
+
+    @Test
+    @Description("Authorization by user 1, create user 2, get user 2 from authorization data of user 1")
+    @DisplayName("Test authorization by one user, but receives data from another")
+    public void testCreateUserAnotherUserData() {
+        // Создание нового пользователя
+        Map<String, String> createUser = new HashMap<>();
+        createUser.put("email", DataGenerator.getRandomEmail());
+        createUser = DataGenerator.getRegistrationData(createUser);
+
+        Response responseCreateUser = apiCoreRequests
+                .makePostRequestCreateUser("https://playground.learnqa.ru/api/user/", createUser);
+        Assertions.assertResponseCodeEquals(responseCreateUser, 200);
+        Assertions.assertJsonHasField(responseCreateUser, "id");
+
+        // Проверка успешной авторизации пользователя
+        Response responseGetCheckAuth = apiCoreRequests
+                .makeGetRequest("https://playground.learnqa.ru/api/user/auth",
+                        this.header,
+                        this.cookie);
+        Assertions.assertJsonByName(responseGetCheckAuth, "user_id", this.userIdOnAuth);
+
+        String userId = responseCreateUser.jsonPath().getString("id");
+        // Получение пользователя
+        Response responseUserData = apiCoreRequests
+                .makeGetRequest("https://playground.learnqa.ru/api/user/" + userId,
+                        this.header,
+                        this.cookie);
+        Assertions.assertJsonHasField(responseUserData, "username");
+        Assertions.assertJsonHasNotField(responseUserData, "email");
+        Assertions.assertJsonHasNotField(responseUserData, "firstName");
+        Assertions.assertJsonHasNotField(responseUserData, "lastName");
     }
 }
