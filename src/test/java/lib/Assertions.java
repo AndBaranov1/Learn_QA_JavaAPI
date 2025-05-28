@@ -68,4 +68,8 @@ public class Assertions {
                 "Expected a message about a field being too long '" + fieldName + "'. Actual answer: " + responseBody
         );
     }
+
+    public static void assertResponseTextError(String response, String expectedAnswer) {
+        assertEquals(expectedAnswer, response, "Response text error as expected");
+    }
 }
