@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  test_runner:
+    build: .
+    image: java_api_tests
+    container_name: java_runner_works
+    volumes:
+      - .:/tests/
+    command: mvn clean test -Dbase.url=https://playground.learnqa.ru/api_dev/

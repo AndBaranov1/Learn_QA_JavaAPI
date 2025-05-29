@@ -10,6 +10,8 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 
 public class ApiCoreRequests {
+    String baseUrl = System.getProperty("base.url", "https://playground.learnqa.ru/api_dev/");
+
     @Step("Make a GET-request with token and auth cookie")
     public Response makeGetRequest(String url, String token, String cookie) {
         return given()
