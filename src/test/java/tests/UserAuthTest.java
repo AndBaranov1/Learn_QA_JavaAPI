@@ -1,8 +1,8 @@
 package tests;
 
-import io.restassured.RestAssured;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import lib.Assertions;
 import lib.BaseTestCase;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,6 +46,7 @@ public class UserAuthTest extends BaseTestCase {
     @Test
     @Description("This test successfully authorize user by email and password")
     @DisplayName("Test positive auth user")
+    @Severity(SeverityLevel.BLOCKER)
     public void testAuthUser() {
         // Проверка успешной авторизации пользователя
         Response responseGCheckAuth = apiCoreRequests
@@ -60,6 +61,7 @@ public class UserAuthTest extends BaseTestCase {
     @DisplayName("Test negative auth user")
     @ParameterizedTest
     @ValueSource(strings = {"cookie", "headers"})
+    @Severity(SeverityLevel.NORMAL)
     public void testNegativeAuthUser(String condition) {
         if (condition.equals("cookie")) {
             Response responseForCheck = apiCoreRequests.makeGetRequestWithCookie("https://playground.learnqa.ru/api/user/auth",

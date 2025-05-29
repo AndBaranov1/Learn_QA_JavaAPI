@@ -1,5 +1,7 @@
 package tests;
 
+import io.qameta.allure.Feature;
+import io.qameta.allure.Link;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lib.Assertions;
@@ -9,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+@Feature("Getting User")
+@Link(name = "Get user info by id (you can get more info for user you are authorized as)",
+        url = "https://playground.learnqa.ru/api/user/{id}")
 public class UserGetTest extends BaseTestCase {
 
     @Test

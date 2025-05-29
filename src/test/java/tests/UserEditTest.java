@@ -1,6 +1,10 @@
 package tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Link;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
@@ -14,6 +18,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+@Feature("Edit User")
+@Link(name = "Update user (must be logged in as this user)",
+        url = "https://playground.learnqa.ru/api/user/{id}")
 public class UserEditTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
@@ -72,6 +79,7 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("This test change user data without authorization")
     @DisplayName("Change user data without authorization")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditNotAuthorization() {
         Map<String, String> createUser = new HashMap<>();
         createUser.put("email", DataGenerator.getRandomEmail());
@@ -97,6 +105,7 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("This test change user data while logged in by another user")
     @DisplayName("Change user data while logged in by another user")
+    @Severity(SeverityLevel.CRITICAL)
     public void testEditAuthorizationAnotherUser() {
         // Создание нового пользователя
         Map<String, String> createUser = new HashMap<>();
@@ -146,6 +155,7 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Change user email while logged in by the same user to a new email without the @ symbol")
     @DisplayName("Change email without the @ symbol")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditWithoutATAuthorizationThisUser() {
         // Создание пользователя
         Map<String, String> createUser = new HashMap<>();
@@ -190,6 +200,7 @@ public class UserEditTest extends BaseTestCase {
     @Test
     @Description("Сhange the firstName of a user, while logged in by the same user, to a very short value of one character")
     @DisplayName("Change user's firstName to short value, same user")
+    @Severity(SeverityLevel.NORMAL)
     public void testEditAuthorizationThisrUserShortFirstName() {
         // Создание пользователя
         Map<String, String> createUser = new HashMap<>();

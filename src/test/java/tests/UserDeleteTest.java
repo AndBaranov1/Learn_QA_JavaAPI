@@ -1,6 +1,10 @@
 package tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Link;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;
@@ -12,6 +16,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+@Feature("Delete User")
+@Link(name = "Delete user by id (must be logged in as this user)",
+        url = "https://playground.learnqa.ru/api/user/{id}")
 public class UserDeleteTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
@@ -23,6 +30,7 @@ public class UserDeleteTest extends BaseTestCase {
     @Test
     @Description("This test delete system user")
     @DisplayName("Delete system user")
+    @Severity(SeverityLevel.NORMAL)
     public void testDeleteUserDefault() {
         // Авторизация пользователя
         Map<String, String> authData = new HashMap<>();
@@ -50,6 +58,7 @@ public class UserDeleteTest extends BaseTestCase {
     @Test
     @Description("This test Create a user, log in as him, delete him, then try to get his data by ID and make sure that the user is really deleted")
     @DisplayName("Creating and deleting a user")
+    @Severity(SeverityLevel.CRITICAL)
     public void testDeleteUser() {
         // Создание пользователя
         Map<String, String> createUser = new HashMap<>();
@@ -95,6 +104,7 @@ public class UserDeleteTest extends BaseTestCase {
     @Test
     @Description("This test delete user while logged in by another user")
     @DisplayName("Delete user while logged in by another user")
+    @Severity(SeverityLevel.CRITICAL)
     public void testDeleteAuthorizationAnotherUser() {
         // Создание нового пользователя
         Map<String, String> createUser = new HashMap<>();

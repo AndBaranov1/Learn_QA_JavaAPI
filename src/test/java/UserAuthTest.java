@@ -1,3 +1,7 @@
+import io.qameta.allure.Feature;
+import io.qameta.allure.Link;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.RestAssured;
 import io.restassured.http.Headers;
 import io.restassured.path.json.JsonPath;
@@ -16,6 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Feature("User Auth")
+@Link(name = "Get user id you are authorizes as OR get 0 if not authorized",
+        url = "https://playground.learnqa.ru/api/user/auth")
 public class UserAuthTest {
 
     String cookie;
@@ -105,6 +112,7 @@ public class UserAuthTest {
     @ParameterizedTest
     @ValueSource(strings = {"Mozilla/5.0 (iPad; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36"})
+    @Severity(SeverityLevel.NORMAL)
     public void testUserAgent(String user_agent) {
         Map<String, String> header = new HashMap<>();
 

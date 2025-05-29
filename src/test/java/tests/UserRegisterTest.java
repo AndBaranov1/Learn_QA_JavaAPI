@@ -1,6 +1,10 @@
 package tests;
 
 import io.qameta.allure.Description;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Link;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
@@ -18,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@Feature("User registration")
+@Link(name = "Create user", url = "https://playground.learnqa.ru/api/user/")
 public class UserRegisterTest extends BaseTestCase {
 
     String cookie;
@@ -93,6 +99,7 @@ public class UserRegisterTest extends BaseTestCase {
     @MethodSource("userFieldVariants")
     @Description("This test creating user with any empty field")
     @DisplayName("Test negative creating user any empty field")
+    @Severity(SeverityLevel.NORMAL)
     public void testCreateUserWithoutFillingOneFields(String username, String firstName, String lastName, String expectedMissingField) {
         String email = DataGenerator.getRandomEmail();
         Map<String, String> createUser = new HashMap<>();
@@ -122,6 +129,7 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("This test creating user with short name")
     @DisplayName("Test negative creating user short name field")
+    @Severity(SeverityLevel.MINOR)
     public void testCreateUserShortName() {
         String username = "v";
 
@@ -139,6 +147,7 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("This test creating user with long name")
     @DisplayName("Test negative creating user long name field")
+    @Severity(SeverityLevel.MINOR)
     public void testCreateUserLongName() {
         String username = "asdsadqwertycfvbgmklpiobcsdvgbnhmkasdrty" +
                 "nfvdxsccasdsadqwertycfvbgmklpiobcsdvgbnhmkasdrtynf" +
@@ -159,6 +168,7 @@ public class UserRegisterTest extends BaseTestCase {
     @Test
     @Description("Authorization by user 1, create user 2, get user 2 from authorization data of user 1")
     @DisplayName("Test authorization by one user, but receives data from another")
+    @Severity(SeverityLevel.CRITICAL)
     public void testCreateUserAnotherUserData() {
         // Создание нового пользователя
         Map<String, String> createUser = new HashMap<>();
